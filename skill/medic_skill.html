@@ -1,0 +1,259 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>메딕 스킬 - RPG & 스킬 헤일 서버</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .background-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("http://trade.santasrv.com/web_2/motd2.gif");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: 0;
+    }
+
+    body {
+      margin: 0;
+      font-family: "HY견고딕", "Malgun Gothic", sans-serif;
+      overflow-y: auto;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .container {
+      position: relative;
+      max-width: 1170px;
+      margin: 50px auto;
+      padding: 0 20px 50px 20px;
+      z-index: 10;
+    }
+
+    .main-panel {
+      background: rgba(20, 20, 20, 0.85);
+      border: 3px solid rgba(255, 215, 0, 0.9);
+      border-radius: 20px;
+      box-shadow: 
+        0 0 30px rgba(255, 215, 0, 0.4),
+        inset 0 0 30px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      position: relative;
+      backdrop-filter: blur(3px);
+    }
+
+    .main-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, 
+        transparent, 
+        #FFD700, 
+        #FFA500, 
+        #FFD700, 
+        transparent);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    .title {
+      font-size: 36px;
+      font-weight: bold;
+      color: #FFD700;
+      text-align: center;
+      text-shadow: 
+        2px 2px 4px rgba(0, 0, 0, 1),
+        0 0 20px rgba(255, 215, 0, 0.8);
+      margin-bottom: 30px;
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .title-icon {
+      width: 50px;
+      height: 50px;
+      filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+    }
+
+    .skill-card {
+      background: rgba(40, 40, 40, 0.7);
+      border: 3px solid rgba(255, 215, 0, 0.6);
+      border-radius: 15px;
+      padding: 25px;
+      backdrop-filter: blur(2px);
+      transition: all 0.3s ease;
+      margin-bottom: 30px;
+    }
+
+    .skill-card:hover {
+      transform: translateY(-5px);
+      border-color: #FFD700;
+      box-shadow: 
+        0 10px 30px rgba(255, 215, 0, 0.6),
+        inset 0 0 20px rgba(255, 215, 0, 0.1);
+    }
+
+    .skill-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #FFD700;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+      margin-bottom: 20px;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .skill-description {
+      font-size: 16px;
+      color: #FFF;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+      line-height: 1.6;
+      text-align: center;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+    }
+
+    .back-button {
+      display: inline-block;
+      background: rgba(255, 215, 0, 0.2);
+      border: 2px solid #FFD700;
+      border-radius: 10px;
+      padding: 12px 30px;
+      color: #FFD700;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+      transition: all 0.3s ease;
+      margin: 0 auto;
+      display: block;
+      width: fit-content;
+    }
+
+    .back-button:hover {
+      background: rgba(255, 215, 0, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.5);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        max-width: 100%;
+      }
+
+      .title {
+        font-size: 28px;
+      }
+
+      .title-icon {
+        width: 40px;
+        height: 40px;
+      }
+
+      .skill-title {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="background-layer"></div>
+
+  <div class="container">
+    <div class="main-panel">
+      <div style="position: relative; margin-bottom: 30px;">
+        <div style="position: absolute; left: 0; top: 50%; transform: translateY(-50%);">
+          <a href="skill.html" class="back-button" style="margin: 0; display: inline-block; width: auto;">⬅ 클래스 선택으로 돌아가기</a>
+        </div>
+        <div class="title" style="margin-bottom: 0; text-align: center;">
+          <img src="https://wiki.teamfortress.com/w/images/1/11/Medic_emblem_RED.png" 
+               alt="Medic" class="title-icon">
+          <span>메딕 스킬</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-title">메딕 : 광역치유</div>
+        <div class="video-container">
+          <iframe src="https://www.youtube.com/embed/5iQ_ANzkqTg" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen>
+          </iframe>
+        </div>
+        <div class="skill-description">
+          주무기+휠을 눌러 광역 치유장판을 소환합니다<br>쿨타임: 45초<br>지속시간: 10초
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-title">메딕 : 긴급 텔레포트</div>
+        <div class="video-container">
+          <iframe src="https://www.youtube.com/embed/Wj4rl5RewxQ" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen>
+          </iframe>
+        </div>
+        <div class="skill-description">
+          보조무기로 팀원을 치료중일때 R 키를 눌러 텔레포트합니다<br>아군과 자신에게 3초간 무적효과를 부여합니다<br>쿨타임: 20초
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-title">메딕 : 궁극기 스타파워</div>
+        <div class="video-container">
+          <iframe src="https://www.youtube.com/embed/_48p4iDd0Gk" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen>
+          </iframe>
+        </div>
+        <div class="skill-description">
+          근접무기+휠을 눌러 스타파워의 힘을 얻습니다<br>공격속도및 이동속도가 빨라지며 지속시간내에는 무적이됩니다<br>쿨타임: 180초<br>지속시간: 30초
+        </div>
+      </div>
+
+      <a href="skill.html" class="back-button">⬅ 클래스 선택으로 돌아가기</a>
+    </div>
+  </div>
+</body>
+</html>

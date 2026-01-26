@@ -1,0 +1,593 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>파이로 무기 특성 - RPG & 스킬 헤일 서버</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .background-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("http://trade.santasrv.com/web_2/motd2.gif");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: 0;
+    }
+
+    body {
+      margin: 0;
+      font-family: "HY견고딕", "Malgun Gothic", sans-serif;
+      overflow-y: auto;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .container {
+      position: relative;
+      max-width: 1200px;
+      margin: 50px auto;
+      padding: 0 20px 50px 20px;
+      z-index: 10;
+    }
+
+    .main-panel {
+      background: rgba(20, 20, 20, 0.85);
+      border: 3px solid rgba(255, 215, 0, 0.9);
+      border-radius: 20px;
+      box-shadow: 
+        0 0 30px rgba(255, 215, 0, 0.4),
+        inset 0 0 30px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      position: relative;
+      backdrop-filter: blur(3px);
+    }
+
+    .main-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, 
+        transparent, 
+        #FFD700, 
+        #FFA500, 
+        #FFD700, 
+        transparent);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    .title {
+      font-size: 36px;
+      font-weight: bold;
+      color: #FFD700;
+      text-align: center;
+      text-shadow: 
+        2px 2px 4px rgba(0, 0, 0, 1),
+        0 0 20px rgba(255, 215, 0, 0.8);
+      margin-bottom: 30px;
+      letter-spacing: 2px;
+    }
+
+    .class-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .class-header img {
+      width: 60px;
+      height: 60px;
+      filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+    }
+
+    .class-header .class-name {
+      font-size: 28px;
+      font-weight: bold;
+      color: #FFF;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+    }
+
+    .category-title {
+      background: rgba(80, 80, 80, 0.7);
+      border: 3px solid rgba(255, 215, 0, 0.8);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .category-title:first-of-type {
+      margin-top: 0;
+    }
+
+    .category-title h2 {
+      font-size: 24px;
+      color: #FFD700;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+      margin: 0;
+    }
+
+    .weapon-container {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+      align-items: stretch;
+    }
+
+    .weapon-icon-box {
+      background: rgba(80, 80, 80, 0.7);
+      border: 3px solid rgba(255, 215, 0, 0.8);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      width: 180px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .weapon-icon-box img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
+    }
+
+    .weapon-name {
+      font-size: 16px;
+      font-weight: bold;
+      color: #FFD700;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+    }
+
+    .weapon-stats-box {
+      background: rgba(80, 80, 80, 0.7);
+      border: 3px solid rgba(255, 215, 0, 0.8);
+      border-radius: 12px;
+      padding: 30px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .stat-item {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+    }
+
+    .stat-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .stat-positive {
+      color: #4CAF50;
+    }
+
+    .stat-negative {
+      color: #F44336;
+    }
+
+    .back-button {
+      display: inline-block;
+      background: rgba(255, 215, 0, 0.2);
+      border: 2px solid #FFD700;
+      border-radius: 10px;
+      padding: 12px 30px;
+      color: #FFD700;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+      transition: all 0.3s ease;
+      margin: 0 auto;
+      display: block;
+      width: fit-content;
+      margin-top: 30px;
+    }
+
+    .back-button:hover {
+      background: rgba(255, 215, 0, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="background-layer"></div>
+
+  <div class="container">
+    <div class="main-panel">
+      <div style="position: relative; margin-bottom: 30px;">
+        <div style="position: absolute; left: 0; top: 50%; transform: translateY(-50%);">
+          <a href="http://trade.santasrv.com/web_2/weapon/weapon.html" class="back-button" style="margin: 0; display: inline-block; width: auto;">⬅ 클래스 선택으로 돌아가기</a>
+        </div>
+        <div class="title" style="margin-bottom: 0; text-align: center;">💣 무기 특성</div>
+      </div>
+
+      <div class="class-header">
+        <img src="https://wiki.teamfortress.com/w/images/b/b1/Pyro_emblem_RED.png" alt="Pyro">
+        <div class="class-name">PYRO</div>
+      </div>
+
+      <!-- ==================== 주무기 ==================== -->
+      <div class="category-title">
+        <h2>주무기 (Primary)</h2>
+      </div>
+
+      <!-- Flame Thrower -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/e/ec/Item_icon_Flame_Thrower.png/100px-Item_icon_Flame_Thrower.png" alt="Flame Thrower">
+          <div class="weapon-name">화염 방사기</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 피해량 10% 증가</div>
+          <div class="stat-item stat-negative"></div>
+        </div>
+      </div>
+
+      <!-- Backburner -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/5/5d/Item_icon_Backburner.png/100px-Item_icon_Backburner.png" alt="Backburner">
+          <div class="weapon-name">백버너</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 치명타 피해량 300% 증가<br>🟢 뒤에서 공격하면 항상 치명타가 들어갑니다</div>
+          <div class="stat-item stat-negative">🔴 압축 공기 분사 비용 100% 증가</div>
+        </div>
+      </div>
+
+      <!-- Degreaser -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/9/94/Item_icon_Degreaser.png/100px-Item_icon_Degreaser.png" alt="Degreaser">
+          <div class="weapon-name">기름때 제거기</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 무기 전환속도 50% 증가<br>🟢 주무기 탄약수 100% 증가</div>
+          <div class="stat-item stat-negative">🔴 화상 지속시간 50% 감소</div>
+        </div>
+      </div>
+
+      <!-- Phlogistinator -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/2/22/Item_icon_Phlogistinator.png/100px-Item_icon_Phlogistinator.png" alt="Phlogistinator">
+          <div class="weapon-name">플로지스톤 <br> 활성화 장치</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 피해량 20% 증가<br>🟢 피해를 입히면 '무앙' 동력이 생성 무앙 동력 완전 충전 시 도발하면 10 초 동안 치명타 100%<br>🟢무앙 중에는 받는 피해량이 감소합니다</div>
+          <div class="stat-item stat-negative">🔴 압축 공기 분사 사용불가</div>
+        </div>
+      </div>
+
+      <!-- Rainblower -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/3/3c/Item_icon_Rainblower.png/100px-Item_icon_Rainblower.png" alt="Rainblower">
+          <div class="weapon-name">무지개 뿌리개</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 사정거리 200% 증가</div>
+          <div class="stat-item stat-negative">🔴 피해량 25% 감소</div>
+        </div>
+      </div>
+	  
+	   <!-- Nostromo Napalmer -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/d/d3/Item_icon_Nostromo_Napalmer.png/100px-Item_icon_Nostromo_Napalmer.png" alt="Rainblower">
+          <div class="weapon-name">노스트로모호 <br> 네이팜 분사기</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 피해량 10% 증가<br>🟢 화상 지속시간 50% 증가</div>
+          <div class="stat-item stat-negative"></div>
+        </div>
+      </div>
+
+      <!-- Dragon's Fury -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/1/1f/Item_icon_Dragon%27s_Fury.png/100px-Item_icon_Dragon%27s_Fury.png" alt="Dragon's Fury">
+          <div class="weapon-name">용의 격노</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 공격속도 50% 증가<br>🟢 주무기 탄약 소지수 100% 증가</div>
+          <div class="stat-item stat-negative"></div>
+        </div>
+      </div>
+
+      <!-- ==================== 보조무기 ==================== -->
+      <div class="category-title">
+        <h2>보조무기 (Secondary)</h2>
+      </div>
+
+      <!-- Shotgun -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/5/5f/Item_icon_Shotgun.png/100px-Item_icon_Shotgun.png" alt="Shotgun">
+          <div class="weapon-name">산탄총</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 발사되는 탄환수 20% 증가</div>
+          <div class="stat-item stat-negative"></div>
+        </div>
+      </div>
+	  
+	  <!-- Reserve Shooter -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/3/34/Item_icon_Reserve_Shooter.png/100px-Item_icon_Reserve_Shooter.png" alt="Reserve Shooter">
+          <div class="weapon-name">부사수</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 적이 공중에 있을시 치명타<br>🟢 무기 교체속도 25% 증가</div>
+          <div class="stat-item stat-negative">🔴 장탄수 50% 감소</div>
+        </div>
+      </div>
+	  
+	  <!-- Panic Attack -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/b/be/Item_icon_Panic_Attack.png/100px-Item_icon_Panic_Attack.png" alt="Panic Attack">
+          <div class="weapon-name">공황 공격</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 한번에 재장전 합니다<br>🟢 공격속도 75% 증가<br>🟢 장탄수 400% 증가<br>🟢 보조무기 탄약수 100% 증가</div>
+          <div class="stat-item stat-negative">🔴 탄창이 비워질때까지 발사합니다<br>🔴 재장전 속도 900% 감소</div>
+        </div>
+      </div>
+
+
+      <!-- Flare Gun -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/7/7b/Item_icon_Flare_Gun.png/100px-Item_icon_Flare_Gun.png" alt="Flare Gun">
+          <div class="weapon-name">조명탄 발사기</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 자가피해를 입어서 높이 점프할수 있습니다<br>🟢 우클릭을 눌러 공중에서 조명탄을 폭파시킵니다<br>🟢 약간의 유도성능이 있습니다<br>🟢 불타는 적에게 맞추시 100% 치명타</div>
+          <div class="stat-item stat-negative"></div>
+        </div>
+      </div>
+
+      <!-- Detonator -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/5/53/Item_icon_Detonator.png/100px-Item_icon_Detonator.png" alt="Detonator">
+          <div class="weapon-name">기폭 장치</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 자가피해를 입어서 높이 점프할수 있습니다<br>🟢 우클릭을 눌러 공중에서 조명탄을 폭파시킵니다<br>🟢 약간의 유도성능이 있습니다<br>🟢 불타는 적에게 맞추시 100% 치명타</div>
+          <div class="stat-item stat-negative"></div>
+        </div>
+      </div>
+
+      <!-- Manmelter -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/9/9d/Item_icon_Manmelter.png/100px-Item_icon_Manmelter.png" alt="Manmelter">
+          <div class="weapon-name">인간 용해 장치</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 포물선으로 떨어지는 투사체 5개를 빠르게 발사합니다 </div>
+          <div class="stat-item stat-negative">🔴 피해량 33% 감소</div>
+        </div>
+      </div>
+
+      <!-- Scorch Shot -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/b/be/Item_icon_Scorch_Shot.png/100px-Item_icon_Scorch_Shot.png" alt="Scorch Shot">
+          <div class="weapon-name">그슬림 한 방</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 네이팜 로켓을 발사합니다</div>
+          <div class="stat-item stat-negative"></div>
+        </div>
+      </div>
+
+      <!-- Thermal Thruster -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/0/00/Item_icon_Thermal_Thruster.png/100px-Item_icon_Thermal_Thruster.png" alt="Thermal Thruster">
+          <div class="weapon-name">가열 가속기</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 최대체력 75+<br>🟢 재충전시간 25% 감소</div>
+          <div class="stat-item stat-negative"></div>
+        </div>
+      </div>
+
+      <!-- Gas Passer -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/0/0e/Item_icon_Gas_Passer.png/100px-Item_icon_Gas_Passer.png" alt="Gas Passer">
+          <div class="weapon-name">가스 패서</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 유도 성능을 가진 네이팜 소형 미사일을 발사합니다</div>
+          <div class="stat-item stat-negative"></div>
+        </div>
+      </div>
+
+      <!-- ==================== 근접무기 ==================== -->
+      <div class="category-title">
+        <h2>근접무기 (Melee)</h2>
+      </div>
+
+      <!-- Fire Axe -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/9/9f/Item_icon_Fire_Axe.png/100px-Item_icon_Fire_Axe.png" alt="Fire Axe">
+          <div class="weapon-name">소방 도끼</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 피해량 10% 증가</div>
+          <div class="stat-item stat-negative"></div>
+        </div>
+      </div>
+
+      <!-- Axtinguisher -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/c/c9/Item_icon_Axtinguisher.png/100px-Item_icon_Axtinguisher.png" alt="Axtinguisher">
+          <div class="weapon-name">소화 도끼</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 불타는 적에게 100% 증가</div>
+          <div class="stat-item stat-negative">🔴 불타지 않는 적에게 피해 50% 감소</div>
+        </div>
+      </div>
+	  
+	   <!-- Postal Pummeler -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/2/2d/Item_icon_Postal_Pummeler.png/100px-Item_icon_Postal_Pummeler.png" alt="Axtinguisher">
+          <div class="weapon-name">전사 통지</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 피해량 100% 증가</div>
+          <div class="stat-item stat-negative">🔴 공격 속도 50% 감소</div>
+        </div>
+      </div>
+
+      <!-- Homewrecker -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/4/4a/Item_icon_Homewrecker.png/100px-Item_icon_Homewrecker.png" alt="Homewrecker">
+          <div class="weapon-name">가정파괴범</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 적에게 적중시 3초간 기절</div>
+          <div class="stat-item stat-negative">🔴 공격 속도 200% 감소</div>
+        </div>
+      </div>
+	  
+	   <!-- Maul -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/2/2e/Item_icon_Maul.png/100px-Item_icon_Maul.png" alt="Homewrecker">
+          <div class="weapon-name">쇠메</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 적에게 적중시 출혈 10초간 적용</div>
+          <div class="stat-item stat-negative">🔴 근접 공격 범위 20% 감소</div>
+        </div>
+      </div>
+
+      <!-- Powerjack -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/c/cf/Item_icon_Powerjack.png/100px-Item_icon_Powerjack.png" alt="Powerjack">
+          <div class="weapon-name">전원 잭</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 착용시 이동속도 33% 증가</div>
+          <div class="stat-item stat-negative">🔴 주무기 탄약수 100% 감소<br>🔴 보조무기 탄약수 100% 감소</div>
+        </div>
+      </div>
+
+      <!-- Back Scratcher -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/4/48/Item_icon_Back_Scratcher.png/100px-Item_icon_Back_Scratcher.png" alt="Back Scratcher">
+          <div class="weapon-name">효자손</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 모든 치료팩은 100% 치료됩니다<br>🟢 초당 체력회복 +25</div>
+          <div class="stat-item stat-negative">🔴 메딕 치료 불가 </div>
+        </div>
+      </div>
+
+      <!-- Sharpened Volcano Fragment -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/a/ac/Item_icon_Sharpened_Volcano_Fragment.png/100px-Item_icon_Sharpened_Volcano_Fragment.png" alt="Sharpened Volcano Fragment">
+          <div class="weapon-name">날카로운 <br> 화산 파편</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 피해량 25% 증가<br>🟢 화상 피해량 50% 증가</div>
+          <div class="stat-item stat-negative">🔴 이동속도 10% 감소</div>
+        </div>
+      </div>
+
+      <!-- Third Degree -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/9/91/Item_icon_Third_Degree.png/100px-Item_icon_Third_Degree.png" alt="Third Degree">
+          <div class="weapon-name">3도 화상</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 도발시 주변 아군을 치료합니다</div>
+          <div class="stat-item stat-negative">🔴 피해량 25% 감소</div>
+        </div>
+      </div>
+
+      <!-- Lollichop -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/6/65/Item_icon_Lollichop.png/100px-Item_icon_Lollichop.png" alt="Lollichop">
+          <div class="weapon-name">학대 사탕</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 적중시 체력 50+<br>🟢 공격속도 33%증가<br>🟢 적중 시 소형 치료제 투척</div>
+          <div class="stat-item stat-negative">🔴 피해량 50% 감소</div>
+        </div>
+      </div>
+
+      <!-- Neon Annihilator -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/e/e9/Item_icon_Neon_Annihilator.png/100px-Item_icon_Neon_Annihilator.png" alt="Neon Annihilator">
+          <div class="weapon-name">네온 전멸기</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 아군을 공격하여 회복시킵니다</div>
+          <div class="stat-item stat-negative">🔴 피해량 25% 감소<br>🔴 공격속도 25% 감소</div>
+        </div>
+      </div>
+
+      <!-- Hot Hand -->
+      <div class="weapon-container">
+        <div class="weapon-icon-box">
+          <img src="https://wiki.teamfortress.com/w/images/thumb/f/f6/Item_icon_Hot_Hand.png/100px-Item_icon_Hot_Hand.png" alt="Hot Hand">
+          <div class="weapon-name">화끈한 손</div>
+        </div>
+        <div class="weapon-stats-box">
+          <div class="stat-item stat-positive">🟢 공격속도 100% 증가</div>
+          <div class="stat-item stat-negative">🔴 빗나갈 시 : 네가 맞는다, 얼간아 </div>
+        </div>
+      </div>
+
+      <a href="http://trade.santasrv.com/web_2/weapon.html" class="back-button">⬅ 클래스 선택으로 돌아가기</a>
+    </div>
+  </div>
+</body>
+</html>

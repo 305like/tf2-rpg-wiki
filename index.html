@@ -1,0 +1,310 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>RPG & 스킬 헤일 서버</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ========== 배경 레이어 (최하단) ========== */
+    .background-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("http://trade.santasrv.com/web_2/motd2.gif");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: 0;
+    }
+
+    body {
+      margin: 0;
+      font-family: "HY견고딕", "Malgun Gothic", sans-serif;
+      overflow: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .container {
+      position: fixed;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 990px;  /* ✅ 900px → 990px (10% 증가) */
+      height: 660px;  /* ✅ 600px → 660px (10% 증가) */
+      z-index: 10;
+    }
+
+    /* 메인 박스 - 반투명 */
+    .main-panel {
+      background: rgba(20, 20, 20, 0.35);
+      border: 3px solid rgba(255, 215, 0, 0.9);
+      border-radius: 20px;
+      box-shadow: 
+        0 0 30px rgba(255, 215, 0, 0.4),
+        inset 0 0 30px rgba(0, 0, 0, 0.1);
+      padding: 44px 44px;  /* ✅ 40px → 44px */
+      position: relative;
+      overflow: hidden;
+      height: 100%;
+      backdrop-filter: blur(2px);
+    }
+
+    /* 상단 장식 라인 */
+    .main-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, 
+        transparent, 
+        #FFD700, 
+        #FFA500, 
+        #FFD700, 
+        transparent);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    /* 제목 */
+    .title {
+      font-size: 37px;  /* ✅ 34px → 37px (10% 증가) */
+      font-weight: bold;
+      color: #FFD700;
+      text-align: center;
+      text-shadow: 
+        2px 2px 4px rgba(0, 0, 0, 1),
+        0 0 20px rgba(255, 215, 0, 0.8);
+      margin-bottom: 28px;  /* ✅ 25px → 28px */
+      letter-spacing: 2px;
+      animation: glow 2s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+      0%, 100% { text-shadow: 2px 2px 4px rgba(0,0,0,1), 0 0 20px rgba(255,215,0,0.8); }
+      50% { text-shadow: 2px 2px 4px rgba(0,0,0,1), 0 0 30px rgba(255,215,0,1); }
+    }
+
+    /* 환영 메시지 */
+    .welcome-box {
+      background: rgba(20, 20, 20, 0.4);
+      border-left: 4px solid #FFD700;
+      padding: 22px 28px;  /* ✅ 20px 25px → 22px 28px */
+      margin-bottom: 39px;  /* ✅ 35px → 39px */
+      border-radius: 8px;
+      backdrop-filter: blur(1px);
+      text-align: center;
+    }
+
+    .welcome-text {
+      font-size: 18px;  /* ✅ 16px → 18px (10% 증가) */
+      color: #FFF;
+      line-height: 1.8;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+    }
+
+    .welcome-text strong {
+      color: #FFD700;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 1), 0 0 10px rgba(255, 215, 0, 0.8);
+    }
+
+    /* 메뉴 그리드 - 5열 2줄 */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 17px;  /* ✅ 15px → 17px */
+      margin-top: 22px;  /* ✅ 20px → 22px */
+    }
+
+    .menu-item {
+      background: rgba(40, 40, 40, 0.5);
+      border: 2px solid rgba(255, 215, 0, 0.8);
+      border-radius: 12px;
+      padding: 20px 11px;  /* ✅ 18px 10px → 20px 11px */
+      text-align: center;
+      text-decoration: none;
+      color: #FFF;
+      font-size: 14px;  /* ✅ 13px → 14px */
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 11px;  /* ✅ 10px → 11px */
+      backdrop-filter: blur(2px);
+    }
+
+    /* 이모지/아이콘 스타일 */
+    .menu-item .emoji {
+      font-size: 33px;  /* ✅ 30px → 33px (10% 증가) */
+      display: block;
+      line-height: 1;
+    }
+
+    /* Discord 아이콘 이미지 스타일 */
+    .menu-item .icon-img {
+      width: 37px;  /* ✅ 34px → 37px */
+      height: 37px;
+      display: block;
+      filter: drop-shadow(0 0 5px rgba(88, 101, 242, 0.5));
+    }
+
+    /* 호버 시 아이콘 효과 */
+    .menu-item:hover .icon-img {
+      filter: drop-shadow(0 0 10px rgba(88, 101, 242, 1));
+      transform: scale(1.1);
+      transition: all 0.3s ease;
+    }
+
+    /* 텍스트 스타일 */
+    .menu-item .text {
+      font-size: 15px;  /* ✅ 14px → 15px */
+      line-height: 1.2;
+    }
+
+    .menu-item::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 215, 0, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.5s, height 0.5s;
+    }
+
+    .menu-item:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .menu-item:hover {
+      transform: translateY(-5px);
+      border-color: #FFF;
+      box-shadow: 0 5px 20px rgba(255, 215, 0, 0.6);
+      background: rgba(255, 215, 0, 0.4);
+    }
+
+    .menu-item span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .menu-item::after {
+      content: '▶';
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0;
+      transition: all 0.3s ease;
+      font-size: 10px;
+    }
+
+    .menu-item:hover::after {
+      opacity: 1;
+      right: 12px;
+    }
+
+    /* 하단 텍스트 */
+    .footer-text {
+      text-align: center;
+      margin-top: 28px;  /* ✅ 25px → 28px */
+      font-size: 13px;  /* ✅ 12px → 13px */
+      color: #DDD;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+    }
+  </style>
+</head>
+<body>
+  <!-- 배경 이미지 전용 레이어 -->
+  <div class="background-layer"></div>
+
+  <div class="container">
+    <div class="main-panel">
+      <div class="title">⚔️ RPG & SKILL HALE ⚔️</div>
+      
+      <div class="welcome-box">
+        <p class="welcome-text">
+          <strong>RPG & 스킬 헤일서버</strong>에 오신 것을 환영합니다!<br><br>
+          현재 서버는 <strong>베타 테스트 중</strong>입니다.<br>
+          플레이하면서 불편한 부분이나 버그를 발견하시면<br>
+          관리자 또는 디스코드를 통해 알려주세요!
+        </p>
+      </div>
+
+      <div class="menu-grid">
+        <!-- 첫 번째 줄 (5개) -->
+        <a href="https://steamcommunity.com/profiles/76561198038759714/" class="menu-item">
+          <span class="emoji">👤</span>
+          <span class="text">관리자 프로필</span>
+        </a>
+        <a href="#" class="menu-item">
+          <span class="emoji">📋</span>
+          <span class="text">업데이트 내역</span>
+        </a>
+        <a href="#" class="menu-item">
+          <span class="emoji">📜</span>
+          <span class="text">서버 규칙</span>
+        </a>
+        <a href="http://trade.santasrv.com/web_2/command/command.html" class="menu-item">
+          <span class="emoji">💬</span>
+          <span class="text">서버 명령어</span>
+        </a>
+        <a href="http://trade.santasrv.com/web_2/weapon/weapon.html" class="menu-item">
+          <span class="emoji">💣</span>
+          <span class="text">무기 특성</span>
+        </a>
+        
+        <!-- 두 번째 줄 (5개) -->
+        <a href="https://discord.com/invite/HDtBsdmC6D" class="menu-item">
+          <img src="https://cdn.simpleicons.org/discord/5865F2" 
+               alt="Discord" 
+               class="icon-img">
+          <span class="text">디스코드</span>
+        </a>
+        <a href="#" class="menu-item">
+          <span class="emoji">💪</span>
+          <span class="text">헤일 목록</span>
+        </a>
+        <a href="http://trade.santasrv.com/web_2/skill/skill.html" class="menu-item">
+          <span class="emoji">🎯</span>
+          <span class="text">스킬 목록</span>
+        </a>
+        <a href="http://trade.santasrv.com/web_2/stats/stats.html" class="menu-item">
+          <span class="emoji">🎓</span>
+          <span class="text">능력치 목록</span>
+        </a>
+        <a href="#" class="menu-item">
+          <span class="emoji">💎</span>
+          <span class="text">후원 안내</span>
+        </a>
+      </div>
+
+      <div class="footer-text">
+        버전 1.0 Beta | 문의: Discord 또는 Steam
+      </div>
+    </div>
+  </div>
+</body>
+</html>
